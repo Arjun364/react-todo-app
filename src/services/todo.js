@@ -9,17 +9,24 @@ export function getAll() {
         {
             id: 1,
             text: 'Learn Javascript',
-            completed: false
+            completed: false,
+            priority: 'High',
+            dueDate: '2023-01-01'
         },
         {
             id: 2,
             text: 'Learn React',
-            completed: false
+            completed: false,
+            priority: 'Medium',
+            dueDate: '2024-02-01'
+
         },
         {
             id: 3,
             text: 'Build a React App',
-            completed: false
+            completed: false,
+            priority: 'Low',
+            dueDate: '2020-03-01'
         }
     ]
 }
@@ -29,12 +36,20 @@ export function getItemById(itemId) {
 }
 
 export function updateStatus(items, itemId, completed) {
+    // Show confirmation only if marking as completed
+    if (completed) {
+        const confirmed = window.confirm("Are you sure you want to complete this task?");
+        if (!confirmed) return items; // Do nothing if not confirmed
+    }
+
     let index = items.findIndex(item => item.id === itemId);
 
-    // Returns a new list of data with updated item.
+    // Do not modify the task if index is not found
+    if (index === -1) return items;
+
     return update(items, {
         [index]: {
-            completed: {$set: completed}
+            completed: { $set: completed }
         }
     });
 }
@@ -59,7 +74,9 @@ function getNextId() {
  */
 export function addToList(list, data) {
     let item = Object.assign({
-        id: getNextId()
+        id: getNextId(),
+        priority: data.priority || 'Medium', // Default to Medium priority
+        dueDate: data.dueDate ||null     // Allow null due date
     }, data);
 
     return list.concat([item]);
